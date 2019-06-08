@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "679341666672",
+    "firebase_url": "https://medispenser-f9123.firebaseio.com",
+    "project_id": "medispenser-f9123",
+    "storage_bucket": "medispenser-f9123.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:679341666672:android:af6dbe6d461ddc71",
+        "android_client_info": {
+          "package_name": "com.example.medispenser"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "679341666672-e64v6qvv1pgil63k3vukan3mk0vtdgfo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.medispenser",
+            "certificate_hash": "550fa7800deddd91b7a3edeb4a9c3431f1bb006c"
+          }
+        },
+        {
+          "client_id": "679341666672-voa60nkgv839d3f4unlsaev9ddmqj4de.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBW-HQRvAtZCpH29isghiCRxy9FNxqg6eo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "679341666672-voa60nkgv839d3f4unlsaev9ddmqj4de.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
