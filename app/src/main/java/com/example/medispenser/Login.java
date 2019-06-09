@@ -25,6 +25,8 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,17 +87,18 @@ public class Login extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        Log.d(TAG, "Result obtained");
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
+                Log.d(TAG, "Result obtained correctly");
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
+                Log.d(TAG, "Google sign in failed", e);
                 // ...
             }
         }
@@ -139,11 +142,15 @@ public class Login extends AppCompatActivity {
     }
 
     private void addNewUserToFireStore(final String uid, String email, String name) {
+        Log.d(TAG, "Nuevo suario detectado");
         // Create a new user with a first and last name
         Map<String, Object> user = new HashMap<>();
         user.put("uid", uid);
         user.put("email", email);
         user.put("name", name);
+        user.put("lastname", null);
+        /*user.put("gender", null);
+        user.put("medispenser", Arrays.asList());*/
 
         db.collection("users")
                 .document(uid)
@@ -151,6 +158,7 @@ public class Login extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Documento usuario creado");
                         Intent intent = new Intent(Login.this, MainActivity.class);
                         //intent.putExtra("USER_ID", uid);
                         startActivity(intent);

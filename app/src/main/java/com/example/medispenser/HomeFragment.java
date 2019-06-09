@@ -38,7 +38,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    String [] myDataset = {"hello", "my", "friend", "what", "is"};
+    String [] myDataset = {"hello", "my", "friend", "what", "is", "hello", "my", "friend", "what", "is", "hello", "my", "friend", "what", "is", "hello", "my", "friend", "what", "is"};
 
     public HomeFragment() {
         // Required empty public constructor
@@ -76,21 +76,14 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_home, container, false);
-
+        // Get a handle to the RecyclerView.
         mRecyclerView = v.findViewById(R.id.my_recycler_view);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        mRecyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        // specify an adapter (see also next example)
-        mAdapter = new MyAdapter(myDataset);
+        // Create an adapter and supply the data to be displayed.
+        mAdapter = new WordListAdapter(getActivity().getApplicationContext(), myDataset);
+        // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
-
+        // Give the RecyclerView a default layout manager.
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         // Inflate the layout for this fragment
         return v;
     }
@@ -135,67 +128,3 @@ public class HomeFragment extends Fragment {
     }
 }
 
-class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-    private String[] mDataset;
-
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        // each data item is just a string in this case
-        public TextView mTextView;
-
-        public ViewHolder(View v) {
-            super(v);
-            mTextView = v.findViewById(R.id.txtViewRes);
-        }
-
-        @Override
-        public void onClick(View v) {
-                // Get the position of the item that was clicked.
-                int mPosition = getLayoutPosition();
-                // Use that to access the affected item in mWordList.
-                String element = mDataset[mPosition];
-                // Change the word in the mWordList.
-                //mDataset.set(mPosition, "Clicked! " + element);
-                mDataset[mPosition] = "Clicked! " +  mDataset[mPosition];
-                // Notify the adapter, that the data has changed so it can
-                // update the RecyclerView to display the data.
-                //Intent intent = new Intent(HomeFragment.this, Login.class);
-
-        }
-    }
-
-    // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(String[] myDataset) {
-        mDataset = myDataset;
-    }
-
-    // Create new views (invoked by the layout manager)
-    @Override
-    public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
-        // create a new view
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.my_text_view, parent, false);
-        // set the view's size, margins, paddings and layout parameters
-        //...
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
-    }
-
-    // Replace the contents of a view (invoked by the layout manager)
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        holder.mTextView.setText(mDataset[position]);
-
-    }
-
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
-        return mDataset.length;
-    }
-}
