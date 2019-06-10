@@ -4,15 +4,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
+
+import static android.app.Activity.RESULT_OK;
+import static android.support.constraint.Constraints.TAG;
 
 
 /**
@@ -28,6 +42,22 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    public static final int TEXT_REQUEST = 1;
+
+
+    // My attributes
+    TextView txtEmail;
+    TextView txtName;
+    TextView txtLastName;
+    TextView txtGender;
+
+    String name;
+    String lastname;
+    String gender;
+
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -71,8 +101,15 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_settings, container, false);
-        Button b = v.findViewById(R.id.signOut);
-        b.setOnClickListener(this);
+        txtEmail = v.findViewById(R.id.txtsettingsEmail);
+        txtName = v.findViewById(R.id.txtSettingsName);
+        txtLastName = v.findViewById(R.id.txtSettingsLastName);
+        txtGender = v.findViewById(R.id.txtSettingsGender);
+        getUserData();
+        Button btnSignOut = v.findViewById(R.id.signOut);
+        Button btnEditSettings = v.findViewById(R.id.btnEditSettings);
+        btnSignOut.setOnClickListener(this);
+        btnEditSettings.setOnClickListener(this);
         return v;
     }
 
@@ -107,6 +144,11 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
             case R.id.signOut:
                 signOut();
                 break;
+
+            case R.id.btnEditSettings:
+                System.out.println("Edit setting changed");
+                editSettings();
+                break;
         }
     }
 
@@ -125,10 +167,82 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         void onFragmentInteraction(Uri uri);
     }
 
+    @Override
+    public void onActivityResult(int requestCode,
+                                 int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == TEXT_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                System.out.println("Data modified");
+                Bundle newData = data.getExtras();
+                String newName = newData.getString("nameEdited");
+                String newLastName = newData.getString("lastnameEdited");
+                String newGender = newData.getString("genderEdited");
+                DocumentReference docRef = db.collection("users").document(currentUser.getUid());
+
+                // Set the "isCapital" field of the city 'DC'
+                docRef.update("name", newName, "lastname", newLastName, "gender", newGender)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot successfully updated!");
+                                getUserData();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error updating document", e);
+                            }
+                        });
+            }
+        }
+    }
+
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(getActivity(), Login.class);
         startActivity(intent);
         getActivity().finish();
+    }
+
+    public void editSettings() {
+        Intent intent = new Intent(getActivity(), EditSettingsActivity.class);
+        Bundle bundleData = new Bundle();
+        bundleData.putString("name", name);
+        bundleData.putString("lastname", lastname);
+        bundleData.putString("gender", gender);
+        intent.putExtras(bundleData);
+        startActivity(intent);
+        startActivityForResult(intent, TEXT_REQUEST);
+    }
+
+    public void getUserData() {
+        DocumentReference docRef = db.collection("users").document(currentUser.getUid());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map<String, Object> user = document.getData();
+
+                        name = (String)user.get("name");
+                        lastname = (String)user.get("lastname");
+                        gender = (String)user.get("gender");
+
+                        txtEmail.setText("Correo Electronico: " + (String)user.get("email"));
+                        txtName.setText("Nombre: " + name);
+                        txtLastName.setText("Apellidos: " + lastname);
+                        txtGender.setText("Sexo: " + gender);
+
+                    } else {
+
+                    }
+                } else {
+                    System.out.println("User document failed");
+                }
+            }
+        });
     }
 }
