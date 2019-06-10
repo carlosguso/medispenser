@@ -17,8 +17,6 @@ import java.util.Map;
 public class LastMedAdapter extends
         RecyclerView.Adapter<LastMedAdapter.ItemViewHolder> {
 
-
-
     private LayoutInflater mInflater;
     private ArrayList mDataset = new ArrayList();
 
@@ -68,12 +66,6 @@ public class LastMedAdapter extends
     public int getItemCount() {
         return mDataset.size();
     }
-
-    public void setData(ArrayList data) {
-        this.mDataset = data;
-    }
-
-
 
 
 

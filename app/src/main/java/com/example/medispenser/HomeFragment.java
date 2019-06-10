@@ -1,7 +1,6 @@
 package com.example.medispenser;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,6 +19,8 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -57,6 +58,7 @@ public class HomeFragment extends Fragment {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     ArrayList data;
+    TextView wel;
 
     String [] myDataset = {"hello", "my", "friend", "what", "is", "hello", "my", "friend", "what", "is", "hello", "my", "friend", "what", "is", "hello", "my", "friend", "what", "is"};
 
@@ -96,11 +98,13 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_home, container, false);
+        wel = v.findViewById(R.id.txtWelcome);
         // Get a handle to the RecyclerView.
         mRecyclerView = v.findViewById(R.id.my_recycler_view);
         // Create an adapter and supply the data to be displayed.
         //mAdapter = new WordListAdapter(getActivity().getApplicationContext(), myDataset);
-        getListItems(currentUser.getUid());
+        //getListItems(currentUser.getUid());
+        getUserData();
         // Inflate the layout for this fragment
         return v;
     }
@@ -154,7 +158,6 @@ public class HomeFragment extends Fragment {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()) {
                     ArrayList meds = new ArrayList();
-                    System.out.println("Query successful, items: " + task.getResult().size());
                     for (QueryDocumentSnapshot document: task.getResult()) {
                         Map<String, Object> machine = document.getData();
                         ArrayList lastmeds = (ArrayList) machine.get("lastMeds");
@@ -163,7 +166,6 @@ public class HomeFragment extends Fragment {
                             lastmedObject.put("machine", (String)machine.get("name"));
                             meds.add(lastmedObject);
                         }
-                        System.out.println("Document data: " + document.getData());
                     }
                     setList(meds);
                 }else {
@@ -177,9 +179,7 @@ public class HomeFragment extends Fragment {
 
     //Funcion que ordena los datos y los guarda en el atributo.
     public void setList(ArrayList meds) {
-        System.out.println("SetListItems");
         ArrayList orderedMeds =  new ArrayList();
-        System.out.println("Meds size: " + meds.size());
         while(!meds.isEmpty()) {
             int index = 0;
             Map<String, Object> dataMain = (Map<String, Object>)meds.get(index);
@@ -200,6 +200,34 @@ public class HomeFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+    }
+
+    public void getUserData() {
+        DocumentReference docRef = db.collection("users").document(currentUser.getUid());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map<String, Object> user = document.getData();
+                        String uid = (String)user.get("uid");
+                        String gender = (String)user.get("gender");
+                        if(gender.equals("Masculino")) {
+                            wel.setText("Bienvenido");
+                        } else {
+                            wel.setText("Bienvenida");
+                        }
+                        getListItems(uid);
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    System.out.println("User document failed");
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
     }
 }
 
