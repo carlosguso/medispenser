@@ -3,10 +3,27 @@ package com.example.medispenser;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 
 /**
@@ -28,6 +45,15 @@ public class PatientsFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    //My attributes
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    ArrayList data;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    private static final String TAG = "MachinesFragment";
 
     public PatientsFragment() {
         // Required empty public constructor
@@ -63,8 +89,13 @@ public class PatientsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_patients, container, false);
+        data = new ArrayList();
+        // Get a handle to the RecyclerView.
+        mRecyclerView = v.findViewById(R.id.recycler_view_patients);
+        getListItems(currentUser.getUid());
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_patients, container, false);
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -104,5 +135,34 @@ public class PatientsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    //Funncion que trae los nombres de las maquinas
+    public void getListItems(String uid) {
+        CollectionReference machinesRef = db.collection("machines");
+        Query query = machinesRef.whereArrayContains("users", uid);
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    ArrayList names = new ArrayList();
+                    System.out.println("Query successful, items: " + task.getResult().size());
+                    for (QueryDocumentSnapshot document: task.getResult()) {
+                        Map<String, Object> machine = document.getData();
+                        names.add((String)machine.get("name"));
+                    }
+                    data = names;
+                    // Create an adapter and supply the data to be displayed.
+                    mAdapter = new MachineListAdapter(getActivity().getApplicationContext(),data);
+                    mRecyclerView.setAdapter(mAdapter);
+                    // Give the RecyclerView a default layout manager.
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+                }else {
+                    System.out.println("Query failed");
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
     }
 }

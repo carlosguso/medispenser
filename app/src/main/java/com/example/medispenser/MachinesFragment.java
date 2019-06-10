@@ -92,9 +92,6 @@ public class MachinesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_machines, container, false);
         data = new ArrayList();
-        data.add("Hi");
-        data.add("Again");
-        System.out.println("Data size: " + data.size());
         // Get a handle to the RecyclerView.
         mRecyclerView = v.findViewById(R.id.recycler_view_machines);
         getListItems(currentUser.getUid());
