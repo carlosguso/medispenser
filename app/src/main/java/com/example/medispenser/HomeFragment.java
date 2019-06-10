@@ -4,13 +4,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 
 /**
@@ -26,6 +42,7 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "HomeFragment";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -37,6 +54,9 @@ public class HomeFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    ArrayList data;
 
     String [] myDataset = {"hello", "my", "friend", "what", "is", "hello", "my", "friend", "what", "is", "hello", "my", "friend", "what", "is", "hello", "my", "friend", "what", "is"};
 
@@ -79,11 +99,8 @@ public class HomeFragment extends Fragment {
         // Get a handle to the RecyclerView.
         mRecyclerView = v.findViewById(R.id.my_recycler_view);
         // Create an adapter and supply the data to be displayed.
-        mAdapter = new WordListAdapter(getActivity().getApplicationContext(), myDataset);
-        // Connect the adapter with the RecyclerView.
-        mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        //mAdapter = new WordListAdapter(getActivity().getApplicationContext(), myDataset);
+        getListItems(currentUser.getUid());
         // Inflate the layout for this fragment
         return v;
     }
@@ -125,6 +142,64 @@ public class HomeFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    //Funncion que trae los datos de lastMeds
+    public void getListItems(String uid) {
+        System.out.println("GetListItems");
+        CollectionReference machinesRef = db.collection("machines");
+        Query query = machinesRef.whereArrayContains("users", uid);
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    ArrayList meds = new ArrayList();
+                    System.out.println("Query successful, items: " + task.getResult().size());
+                    for (QueryDocumentSnapshot document: task.getResult()) {
+                        Map<String, Object> machine = document.getData();
+                        ArrayList lastmeds = (ArrayList) machine.get("lastMeds");
+                        for(int i = 0; i < lastmeds.size(); i++) {
+                            Map<String, Object> lastmedObject = (Map<String, Object>)lastmeds.get(i);
+                            lastmedObject.put("machine", (String)machine.get("name"));
+                            meds.add(lastmedObject);
+                        }
+                        System.out.println("Document data: " + document.getData());
+                    }
+                    setList(meds);
+                }else {
+                    System.out.println("Query failed");
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+    }
+
+    //Funcion que ordena los datos y los guarda en el atributo.
+    public void setList(ArrayList meds) {
+        System.out.println("SetListItems");
+        ArrayList orderedMeds =  new ArrayList();
+        System.out.println("Meds size: " + meds.size());
+        while(!meds.isEmpty()) {
+            int index = 0;
+            Map<String, Object> dataMain = (Map<String, Object>)meds.get(index);
+            Timestamp timeMain = (Timestamp)dataMain.get("date");
+            for(int i = index + 1; i < meds.size(); i++) {
+                Map<String, Object> data = (Map<String, Object>)meds.get(i);
+                Timestamp t = (Timestamp)data.get("date");
+                if(t.compareTo(timeMain) >= 0) {
+                    dataMain = data;
+                }
+            }
+            orderedMeds.add(dataMain);
+            meds.remove(dataMain);
+        }
+        this.data = orderedMeds;
+        mAdapter = new LastMedAdapter(getActivity().getApplicationContext(), this.data);
+        // Connect the adapter with the RecyclerView.
+        mRecyclerView.setAdapter(mAdapter);
+        // Give the RecyclerView a default layout manager.
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
     }
 }
 

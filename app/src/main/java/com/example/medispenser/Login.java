@@ -25,7 +25,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -149,8 +148,9 @@ public class Login extends AppCompatActivity {
         user.put("email", email);
         user.put("name", name);
         user.put("lastname", null);
-        /*user.put("gender", null);
-        user.put("medispenser", Arrays.asList());*/
+        user.put("gender", null);
+        user.put("medispenser", Arrays.asList());
+
 
         db.collection("users")
                 .document(uid)
