@@ -28,10 +28,13 @@ public class MachineSettingsActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "MachineSettingsActivity";
+    public static final int ADD_REQUEST = 1;
 
     TextView txtMachineName;
     TextView txtMachineSlots;
     TextView txtMachineTitle;
+    String mId;
+    int titleLen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +42,10 @@ public class MachineSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_machine_settings);
         Intent intent = getIntent();
         String machineId = intent.getStringExtra("machineId");
+        this.mId = machineId;
         txtMachineName = findViewById(R.id.txtMachineSettingsName);
         txtMachineTitle = findViewById(R.id.txtMachineSettingsTitle);
+        titleLen = txtMachineTitle.getText().length();
         txtMachineSlots = findViewById(R.id.txtMachineSettingsSlots);
         mRecyclerView = findViewById(R.id.recycler_view_word_meds);
         getData(machineId);
@@ -77,14 +82,26 @@ public class MachineSettingsActivity extends AppCompatActivity {
 
                         Map<String, Object> machine = document.getData();
 
-                        txtMachineTitle.setText(txtMachineTitle.getText().toString() + (String)machine.get("name"));
+                        String machineTitleText = txtMachineTitle.getText().toString() + (String)machine.get("name");
+
+                        if(txtMachineTitle.getText().length() <= titleLen) {
+                            txtMachineTitle.setText(machineTitleText);
+                        }
+
+
                         txtMachineName.setText((String)machine.get("name"));
                         txtMachineSlots.setText((String)machine.get("slots"));
                         meds = (ArrayList)machine.get("meds");
                         for(int i = 0; i < meds.size(); i++) {
                             Map<String, Object> item = (Map<String, Object>)meds.get(i);
                             String name = (String)item.get("nombre");
-                            medsName.add(name);
+                            String slot = (String)item.get("slot");
+                            if(slot.equals("0")) {
+                                medsName.add(name);
+                            } else {
+                                medsName.add((name + " - slot: " + slot));
+                            }
+
                         }
                         String [] data = (String [])medsName.toArray(new String[medsName.size()]);
 
@@ -105,8 +122,24 @@ public class MachineSettingsActivity extends AppCompatActivity {
     }
 
     public void addMed(View view) {
+        Intent intentMed = new Intent(MachineSettingsActivity.this, MachineSettingsMedActivity.class);
+        intentMed.putExtra("machineId", this.mId);
+        startActivityForResult(intentMed, ADD_REQUEST);
     }
 
     public void editMachine(View view) {
+    }
+
+    public void onActivityResult(int requestCode,
+                                 int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == ADD_REQUEST) {
+            if(resultCode == RESULT_OK) {
+                getData(this.mId);
+            }
+        } else {
+            setResult(requestCode);
+            finish();
+        }
     }
 }
