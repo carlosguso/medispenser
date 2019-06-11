@@ -29,6 +29,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "MachineSettingsActivity";
     public static final int ADD_REQUEST = 1;
+    public static final int EDIT_REQUEST = 3;
 
     TextView txtMachineName;
     TextView txtMachineSlots;
@@ -128,12 +129,15 @@ public class MachineSettingsActivity extends AppCompatActivity {
     }
 
     public void editMachine(View view) {
+        Intent intentMed = new Intent(MachineSettingsActivity.this, MachineSettingsEditActivity.class);
+        intentMed.putExtra("machineId", this.mId);
+        startActivityForResult(intentMed, EDIT_REQUEST);
     }
 
     public void onActivityResult(int requestCode,
                                  int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == ADD_REQUEST) {
+        if(requestCode == ADD_REQUEST || requestCode == EDIT_REQUEST) {
             if(resultCode == RESULT_OK) {
                 getData(this.mId);
             }

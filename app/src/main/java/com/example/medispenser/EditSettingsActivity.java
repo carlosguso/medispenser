@@ -23,7 +23,7 @@ public class EditSettingsActivity extends AppCompatActivity {
         eTxtGender = findViewById(R.id.editTextGender);
 
         Bundle data = getIntent().getExtras();
-        eTxtGender.setText(data.getString("name"));
+        eTxtName.setText(data.getString("name"));
         eTxtLastName.setText(data.getString("lastname"));
         eTxtGender.setText(data.getString("gender"));
     }
