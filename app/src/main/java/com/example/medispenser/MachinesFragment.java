@@ -148,14 +148,16 @@ public class MachinesFragment extends Fragment {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()) {
                     ArrayList names = new ArrayList();
+                    ArrayList ids = new ArrayList();
                     System.out.println("Query successful, items: " + task.getResult().size());
                     for (QueryDocumentSnapshot document: task.getResult()) {
                         Map<String, Object> machine = document.getData();
                         names.add((String)machine.get("name"));
+                        ids.add((String)machine.get("id"));
                     }
                     data = names;
                     // Create an adapter and supply the data to be displayed.
-                    mAdapter = new MachineListAdapter(getActivity().getApplicationContext(),data);
+                    mAdapter = new MachineListAdapter(getActivity().getApplicationContext(),data, ids);
                     mRecyclerView.setAdapter(mAdapter);
                     // Give the RecyclerView a default layout manager.
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));

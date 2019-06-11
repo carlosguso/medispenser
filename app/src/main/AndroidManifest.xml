@@ -9,19 +9,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EditSettingsActivity">
-            android:label = "Edit Settings Activity"
-            android:parentActivityName=".MainActivity">
+        <activity android:name=".MachineSettingsActivity"></activity>
+        <activity
+            android:name=".EditSettingsActivity"
+            android:label="Edit Settings Activity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=
-                    "com.example.medispenser.MainActivity" />
+                android:value="com.example.medispenser.MainActivity" />
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main" />
-        <activity android:name=".Login" />
-        <activity android:name=".SplashActivity">
+            android:label="@string/title_activity_main"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Login"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
