@@ -8,10 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class WordListAdapter extends
         RecyclerView.Adapter<WordListAdapter.WordViewHolder>  {
 
     private String [] mDataset;
+    private ArrayList data;
     private LayoutInflater mInflater;
 
     public WordListAdapter(Context context,
@@ -35,14 +38,14 @@ public class WordListAdapter extends
         @Override
         public void onClick(View v) {
             // Get the position of the item that was clicked.
-            int mPosition = getLayoutPosition();
+            /*int mPosition = getLayoutPosition();
             // Use that to access the affected item in mWordList.
             String element = mDataset[mPosition];
             // Change the word in the mWordList.
             mDataset[mPosition] =  "Clicked! " + mDataset[mPosition];
             // Notify the adapter, that the data has changed so it can
             // update the RecyclerView to display the data.
-            mAdapter.notifyDataSetChanged();
+            mAdapter.notifyDataSetChanged();*/
         }
     }
 

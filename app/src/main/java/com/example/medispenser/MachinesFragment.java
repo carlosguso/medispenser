@@ -1,6 +1,7 @@
 package com.example.medispenser;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,6 +26,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Map;
+
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -55,6 +58,7 @@ public class MachinesFragment extends Fragment {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     private static final String TAG = "MachinesFragment";
+    public static final int TEXT_REQUEST = 2;
 
     public MachinesFragment() {
         // Required empty public constructor
@@ -157,7 +161,7 @@ public class MachinesFragment extends Fragment {
                     }
                     data = names;
                     // Create an adapter and supply the data to be displayed.
-                    mAdapter = new MachineListAdapter(getActivity().getApplicationContext(),data, ids);
+                    mAdapter = new MachineListAdapter(getActivity().getApplicationContext(),data, ids, MachinesFragment.this);
                     mRecyclerView.setAdapter(mAdapter);
                     // Give the RecyclerView a default layout manager.
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
@@ -170,5 +174,18 @@ public class MachinesFragment extends Fragment {
 
     }
 
+    public void onActivityResult(int requestCode,
+                                 int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        System.out.println("Regreso el viejon, requestCode: " + requestCode);
+        if (requestCode == TEXT_REQUEST) {
+            System.out.println("El requestCode es correcto y el result_code es: " + resultCode);
+            if (resultCode == RESULT_OK) {
+                System.out.println("Regreso el viejon OK");
+                getListItems(currentUser.getUid());
+            }
+        }
+
+    }
 
 }
