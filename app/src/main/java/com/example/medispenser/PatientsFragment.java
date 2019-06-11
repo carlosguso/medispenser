@@ -1,6 +1,7 @@
 package com.example.medispenser;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -155,7 +156,7 @@ public class PatientsFragment extends Fragment {
                     }
                     data = names;
                     // Create an adapter and supply the data to be displayed.
-                    mAdapter = new PatientsListAdapter(getActivity().getApplicationContext(),data, ids);
+                    mAdapter = new PatientsListAdapter(getActivity().getApplicationContext(),data, ids, PatientsFragment.this);
                     mRecyclerView.setAdapter(mAdapter);
                     // Give the RecyclerView a default layout manager.
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
@@ -165,6 +166,12 @@ public class PatientsFragment extends Fragment {
                 }
             }
         });
+
+    }
+
+    public void onActivityResult(int requestCode,
+                                 int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
     }
 }
