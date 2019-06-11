@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -95,16 +96,19 @@ public class MachineSettingsActivity extends AppCompatActivity {
                         meds = (ArrayList)machine.get("meds");
                         for(int i = 0; i < meds.size(); i++) {
                             Map<String, Object> item = (Map<String, Object>)meds.get(i);
-                            String name = (String)item.get("nombre");
-                            String slot = (String)item.get("slot");
-                            if(slot.equals("0")) {
-                                medsName.add(name);
-                            } else {
-                                medsName.add((name + " - slot: " + slot));
+                            if(!item.isEmpty()) {
+                                String name = (String)item.get("nombre");
+                                String slot = (String)item.get("slot");
+                                if(slot.equals("0")) {
+                                    medsName.add(name);
+                                } else {
+                                    medsName.add((name + " - slot: " + slot));
+                                }
                             }
 
                         }
                         String [] data = (String [])medsName.toArray(new String[medsName.size()]);
+
 
                         // Create an adapter and supply the data to be displayed.
                         mAdapter = new WordListAdapter(getApplicationContext(), data);
@@ -139,10 +143,12 @@ public class MachineSettingsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == ADD_REQUEST || requestCode == EDIT_REQUEST) {
             if(resultCode == RESULT_OK) {
-                getData(this.mId);
+                //getData(this.mId);
+                setResult(resultCode);
+                finish();
             }
         } else {
-            setResult(requestCode);
+            setResult(resultCode);
             finish();
         }
     }

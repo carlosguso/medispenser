@@ -163,8 +163,11 @@ public class HomeFragment extends Fragment {
                         ArrayList lastmeds = (ArrayList) machine.get("lastMeds");
                         for(int i = 0; i < lastmeds.size(); i++) {
                             Map<String, Object> lastmedObject = (Map<String, Object>)lastmeds.get(i);
-                            lastmedObject.put("machine", (String)machine.get("name"));
-                            meds.add(lastmedObject);
+                            if(!lastmedObject.isEmpty()) {
+                                lastmedObject.put("machine", (String)machine.get("name"));
+                                meds.add(lastmedObject);
+                            }
+
                         }
                     }
                     setList(meds);

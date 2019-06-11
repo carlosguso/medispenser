@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -38,7 +39,7 @@ import static android.app.Activity.RESULT_OK;
  * Use the {@link MachinesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MachinesFragment extends Fragment {
+public class MachinesFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -58,6 +59,9 @@ public class MachinesFragment extends Fragment {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     private static final String TAG = "MachinesFragment";
+    public static final int MACHINE_ADD_REQUEST = 4;
+    public static final int ADD_REQUEST = 1;
+    public static final int EDIT_REQUEST = 3;
     public static final int TEXT_REQUEST = 2;
 
     public MachinesFragment() {
@@ -99,6 +103,8 @@ public class MachinesFragment extends Fragment {
         // Get a handle to the RecyclerView.
         mRecyclerView = v.findViewById(R.id.recycler_view_machines);
         getListItems(currentUser.getUid());
+        Button btnFragment = v.findViewById(R.id.btnMachineFragment);
+        btnFragment.setOnClickListener(this);
         // Inflate the layout for this fragment
         return v;
 
@@ -126,6 +132,16 @@ public class MachinesFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnMachineFragment:
+                startAddMachine();
+                break;
+
+        }
     }
 
     /**
@@ -186,6 +202,19 @@ public class MachinesFragment extends Fragment {
             }
         }
 
+
+
+        if(requestCode == MACHINE_ADD_REQUEST) {
+            if(resultCode == RESULT_OK) {
+                getListItems(currentUser.getUid());
+            }
+        }
+    }
+
+    public void startAddMachine() {
+        Intent intent = new Intent(getActivity(), AddMachineActivity.class);
+        startActivity(intent);
+        startActivityForResult(intent, MACHINE_ADD_REQUEST);
     }
 
 }

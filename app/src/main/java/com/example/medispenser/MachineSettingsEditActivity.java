@@ -161,8 +161,10 @@ public class MachineSettingsEditActivity extends AppCompatActivity implements Ad
 
                         for(int i = 0; i < meds.size(); i++) {
                             Map<String, Object> item = (Map<String, Object>)meds.get(i);
-                            String name = (String)item.get("nombre");
-                            medsName.add(name);
+                            if(!item.isEmpty()) {
+                                String name = (String)item.get("nombre");
+                                medsName.add(name);
+                            }
                         }
                         //String [] data = (String [])medsName.toArray(new String[medsName.size()]);
                         medList = meds;

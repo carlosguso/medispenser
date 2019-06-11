@@ -9,8 +9,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MachineSettingsEditActivity"></activity>
-        <activity android:name=".MachineSettingsMedActivity" />
+        <activity android:name=".AddMachineActivity"
+            android:label="Add Machine Activity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.medispenser.MainActivity" />
+        </activity>
+        <activity android:name=".MachineSettingsEditActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MachineSettingsMedActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".MachineSettingsActivity"
             android:label="Machine Settings Activity"
