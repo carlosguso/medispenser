@@ -20,7 +20,7 @@ public class PatientsListAdapter  extends RecyclerView.Adapter<PatientsListAdapt
     private ArrayList mDataIds;
     private Fragment fragment;
     private Activity activity;
-    private Activity activityTarget;
+    private Class activityTarget;
 
     public PatientsListAdapter(Context context, ArrayList data, ArrayList ids, Fragment fr) {
         mInflater = LayoutInflater.from(context);
@@ -41,13 +41,13 @@ public class PatientsListAdapter  extends RecyclerView.Adapter<PatientsListAdapt
     }
 
 
-    public PatientsListAdapter(Context context, ArrayList data, ArrayList ids, Activity act, Activity target) {
+    public PatientsListAdapter(Context context, ArrayList data, ArrayList ids, Activity act, Class target) {
         mInflater = LayoutInflater.from(context);
         this.mDataset = data;
         this.mDataIds = ids;
         this.fragment = null;
         this.activity = act;
-        this.activityTarget =target;
+        this.activityTarget = target;
     }
 
 
@@ -78,6 +78,10 @@ public class PatientsListAdapter  extends RecyclerView.Adapter<PatientsListAdapt
                 fragment.startActivityForResult(intent, PATIENT_REQUEST);
             } else if(activity != null) {
                 System.out.println("Patient clicked!");
+
+                if(activityTarget != null) {
+                    System.out.println(activityTarget.toString());
+                }
             }
 
         }

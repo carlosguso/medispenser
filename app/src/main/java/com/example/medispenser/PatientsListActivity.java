@@ -95,12 +95,10 @@ public class PatientsListActivity extends AppCompatActivity {
                     }
                     data = names;
                     // Create an adapter and supply the data to be displayed.
-                    mAdapter = new PatientsListAdapter(getApplicationContext(),data, ids, PatientsListActivity.this);
+                    mAdapter = new PatientsListAdapter(getApplicationContext(),data, ids, PatientsListActivity.this, MachineSettingsActivity.class);
                     mRecyclerView.setAdapter(mAdapter);
                     // Give the RecyclerView a default layout manager.
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                    System.out.println("Patients list this: " + PatientsListActivity.this);
-                    System.out.println("Patients list class: " + PatientsListActivity.class);
                 }else {
                     System.out.println("Query failed");
                     Log.d(TAG, "get failed with ", task.getException());
