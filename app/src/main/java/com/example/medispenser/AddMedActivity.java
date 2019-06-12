@@ -195,8 +195,41 @@ public class AddMedActivity extends AppCompatActivity {
         DocumentReference docRef = db.collection("patients").document(patientId);
         docRef.update("medicaciones", FieldValue.arrayUnion(newMedication));
 
+        updateLastMedsHome(newMedication);
+
         Intent reply = new Intent();
         setResult(RESULT_OK, reply);
         finish();
+    }
+
+    public void updateLastMedsHome(final Map<String, Object> medication) {
+        final Map<String, Object> lastMedItem = new HashMap<>();
+
+        DocumentReference patientRef = db.collection("patients").document(patientId);
+        patientRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Map<String, Object> patient = document.getData();
+                        String patientName = patient.get("name").toString();
+                        String patientLastName = patient.get("lastName").toString();
+                        lastMedItem.put("name", (patientName + " " + patientLastName));
+                        lastMedItem.put("date", medication.get("tomaInicial"));
+
+                        DocumentReference docRef = db.collection("machines").document(machineId);
+                        docRef.update("lastMeds", FieldValue.arrayUnion(lastMedItem));
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+
     }
 }

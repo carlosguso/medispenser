@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,12 +22,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
 
@@ -164,12 +169,18 @@ public class HomeFragment extends Fragment {
                         for(int i = 0; i < lastmeds.size(); i++) {
                             Map<String, Object> lastmedObject = (Map<String, Object>)lastmeds.get(i);
                             if(!lastmedObject.isEmpty()) {
-                                lastmedObject.put("machine", (String)machine.get("name"));
-                                meds.add(lastmedObject);
+                                Timestamp medDate = (Timestamp)lastmedObject.get("date");
+                                Timestamp currentTime = new Timestamp(new Date());
+                                int compareRes = currentTime.compareTo(medDate);
+                                if(compareRes > 0 ){
+                                    lastmedObject.put("machine", (String)machine.get("name"));
+                                    meds.add(lastmedObject);
+                                }
                             }
 
                         }
                     }
+
                     setList(meds);
                 }else {
                     System.out.println("Query failed");
@@ -186,16 +197,21 @@ public class HomeFragment extends Fragment {
         while(!meds.isEmpty()) {
             int index = 0;
             Map<String, Object> dataMain = (Map<String, Object>)meds.get(index);
-            Timestamp timeMain = (Timestamp)dataMain.get("date");
+
             for(int i = index + 1; i < meds.size(); i++) {
+
                 Map<String, Object> data = (Map<String, Object>)meds.get(i);
                 Timestamp t = (Timestamp)data.get("date");
-                if(t.compareTo(timeMain) >= 0) {
+
+                if(t.compareTo((Timestamp)dataMain.get("date")) >= 0) {
                     dataMain = data;
                 }
             }
             orderedMeds.add(dataMain);
             meds.remove(dataMain);
+        }
+        for(int i = 0; i < orderedMeds.size(); i++) {
+            System.out.println(orderedMeds.get(i));
         }
         this.data = orderedMeds;
         mAdapter = new LastMedAdapter(getActivity().getApplicationContext(), this.data);
@@ -203,6 +219,24 @@ public class HomeFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+    }
+
+    //Listen for document changes
+    public void listMachinesMedUpdates(final String uid) {
+        db.collection("machines")
+                .whereArrayContains("users", uid)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
+
+                        getListItems(uid);
+                    }
+                });
     }
 
     public void getUserData() {
@@ -221,7 +255,8 @@ public class HomeFragment extends Fragment {
                         } else {
                             wel.setText("Bienvenida");
                         }
-                        getListItems(uid);
+                        //getListItems(uid);
+                        listMachinesMedUpdates(uid);
                     } else {
                         Log.d(TAG, "No such document");
                     }
