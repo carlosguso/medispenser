@@ -24,14 +24,16 @@ public class MedListAdapter extends RecyclerView.Adapter<MedListAdapter.MedItemV
     private Activity activity;
     private Class activityTarget;
     private String patiendId;
+    private String machineId;
 
-    public MedListAdapter(Context context, ArrayList data, ArrayList objects, Activity act, Class target, String patientid) {
+    public MedListAdapter(Context context, ArrayList data, ArrayList objects, Activity act, Class target, String patientid, String machineid) {
         this.mInflater = LayoutInflater.from(context);
         this.mDataset = data;
         this.mDataObjects = objects;
         this.activity = act;
         this.activityTarget = target;
         this.patiendId = patientid;
+        this.machineId = machineid;
     }
 
     public class MedItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -54,6 +56,7 @@ public class MedListAdapter extends RecyclerView.Adapter<MedListAdapter.MedItemV
             Map<String, Object> medItem = new HashMap<>();
             medItem = (Map<String, Object>)mDataObjects.get(pos);
             intent.putExtra("patientId", patiendId);
+            intent.putExtra("machineId", machineId);
             intent.putExtra("medItem", (Serializable) medItem);
             activity.startActivityForResult(intent, DELETE_MED);
         }

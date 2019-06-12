@@ -90,7 +90,7 @@ public class PatientActivity extends AppCompatActivity {
             String medName = medItem.get("medicamento").toString();
             medsName.add(medName);
         }
-        mAdapter = new MedListAdapter(getApplicationContext(),medsName, meds, PatientActivity.this, MedActivity.class, patientId);
+        mAdapter = new MedListAdapter(getApplicationContext(),medsName, meds, PatientActivity.this, MedActivity.class, patientId, machineId);
         //((PatientsListAdapter) mAdapter).setMachineId(machineId);
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.

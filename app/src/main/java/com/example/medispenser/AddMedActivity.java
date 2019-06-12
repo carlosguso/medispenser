@@ -218,6 +218,8 @@ public class AddMedActivity extends AppCompatActivity {
                         String patientLastName = patient.get("lastName").toString();
                         lastMedItem.put("name", (patientName + " " + patientLastName));
                         lastMedItem.put("date", medication.get("tomaInicial"));
+                        lastMedItem.put("patientId", patientId);
+                        lastMedItem.put("medName", medication.get("medicamento"));
 
                         DocumentReference docRef = db.collection("machines").document(machineId);
                         docRef.update("lastMeds", FieldValue.arrayUnion(lastMedItem));
