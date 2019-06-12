@@ -31,6 +31,7 @@ public class PatientActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     ArrayList data;
     private static final int ADD_MED = 3;
+    public static final int DELETE_MED = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +90,7 @@ public class PatientActivity extends AppCompatActivity {
             String medName = medItem.get("medicamento").toString();
             medsName.add(medName);
         }
-        mAdapter = new MedListAdapter(getApplicationContext(),medsName, meds, PatientActivity.this, MedActivity.class);
+        mAdapter = new MedListAdapter(getApplicationContext(),medsName, meds, PatientActivity.this, MedActivity.class, patientId);
         //((PatientsListAdapter) mAdapter).setMachineId(machineId);
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
@@ -108,6 +109,12 @@ public class PatientActivity extends AppCompatActivity {
                                  int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == ADD_MED) {
+            if(resultCode == RESULT_OK) {
+                getPatientData();
+            }
+        }
+
+        if(requestCode ==DELETE_MED) {
             if(resultCode == RESULT_OK) {
                 getPatientData();
             }
