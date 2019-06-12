@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MedActivity"></activity>
+        <activity android:name=".AddMedActivity"></activity>
+        <activity android:name=".MedActivity" />
         <activity android:name=".PatientActivity" />
         <activity android:name=".AddPatientActivity" />
         <activity android:name=".PatientsListActivity" />

@@ -30,6 +30,7 @@ public class PatientActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     ArrayList data;
+    private static final int ADD_MED = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,5 +97,20 @@ public class PatientActivity extends AppCompatActivity {
     }
 
     public void addPatientMed(View view) {
+        Intent intent = new Intent(this, AddMedActivity.class);
+        intent.putExtra("machineId", machineId);
+        intent.putExtra("patientId", patientId);
+        startActivityForResult(intent, ADD_MED);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode,
+                                 int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == ADD_MED) {
+            if(resultCode == RESULT_OK) {
+                getPatientData();
+            }
+        }
     }
 }
