@@ -35,6 +35,7 @@ public class PatientsListActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     private static final String TAG = "PatientsListActivity";
+    private static final int ADD_PATIENT = 2;
     String machineId;
 
     @Override
@@ -110,10 +111,16 @@ public class PatientsListActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode,
                                  int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        if(requestCode == ADD_PATIENT) {
+            if(resultCode == RESULT_OK) {
+                getListItems(machineId);
+            }
+        }
     }
 
     public void addPatient(View view) {
-        System.out.println("Add patient clicked!");
+        Intent intent = new Intent(this, AddPatientActivity.class);
+        intent.putExtra("machineId", machineId);
+        startActivityForResult(intent, ADD_PATIENT);
     }
 }
