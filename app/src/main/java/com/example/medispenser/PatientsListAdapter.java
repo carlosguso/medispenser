@@ -21,6 +21,7 @@ public class PatientsListAdapter  extends RecyclerView.Adapter<PatientsListAdapt
     private Fragment fragment;
     private Activity activity;
     private Class activityTarget;
+    private String machine = null;
 
     public PatientsListAdapter(Context context, ArrayList data, ArrayList ids, Fragment fr) {
         mInflater = LayoutInflater.from(context);
@@ -51,12 +52,22 @@ public class PatientsListAdapter  extends RecyclerView.Adapter<PatientsListAdapt
     }
 
 
+    public void setMachineId(String m) {
+        this.machine = m;
+    }
+
+    public void setMedObject(ArrayList objects) {
+        this.mDataIds = objects;
+    }
+
+
 
     class PatientItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final Button btn;
         final PatientsListAdapter patientAdapter;
         public static final int PATIENT_REQUEST = 2;
+        public static final int SEE_PATIENT = 3;
 
         public PatientItemViewHolder(@NonNull View itemView, PatientsListAdapter adapter) {
             super(itemView);
@@ -79,8 +90,14 @@ public class PatientsListAdapter  extends RecyclerView.Adapter<PatientsListAdapt
             } else if(activity != null) {
                 System.out.println("Patient clicked!");
 
+
                 if(activityTarget != null) {
                     System.out.println(activityTarget.toString());
+                    int pos = getLayoutPosition();
+                    Intent intent = new Intent(v.getContext(), activityTarget);
+                    intent.putExtra("patientId", (String)mDataIds.get(pos));
+                    intent.putExtra("machineId", machine);
+                    activity.startActivityForResult(intent, SEE_PATIENT);
                 }
             }
 

@@ -96,7 +96,8 @@ public class PatientsListActivity extends AppCompatActivity {
                     }
                     data = names;
                     // Create an adapter and supply the data to be displayed.
-                    mAdapter = new PatientsListAdapter(getApplicationContext(),data, ids, PatientsListActivity.this, MachineSettingsActivity.class);
+                    mAdapter = new PatientsListAdapter(getApplicationContext(),data, ids, PatientsListActivity.this, PatientActivity.class);
+                    ((PatientsListAdapter) mAdapter).setMachineId(machineId);
                     mRecyclerView.setAdapter(mAdapter);
                     // Give the RecyclerView a default layout manager.
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
